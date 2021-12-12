@@ -15,11 +15,11 @@ import os
 import numpy as np
 import paddle
 
-from lib.core.config import get_model_name
-from lib.core.evaluate import accuracy
-from lib.core.inference import get_final_preds
-from lib.utils.transforms import flip_back
-from lib.utils.vis import save_debug_images
+from core.config import get_model_name
+from core.evaluate import accuracy
+from core.inference import get_final_preds
+from utils.transforms import flip_back
+from utils.vis import save_debug_images
 
 
 logger = logging.getLogger(__name__)
@@ -71,9 +71,10 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         # measure elapsed time
         batch_time.update(time.time() - end)
         end = time.time()
-
+        time_array = time.localtime(end)
+        current_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
         if i % config.PRINT_FREQ == 0:
-            msg = 'Epoch: [{0}][{1}/{2}]\t' \
+            msg = current_time+'\t'+'Epoch: [{0}][{1}/{2}]\t' \
                   'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
                   'Speed {speed:.1f} samples/s\t' \
                   'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \

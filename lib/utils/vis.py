@@ -11,7 +11,6 @@ from __future__ import print_function
 import math
 
 import numpy as np
-import torchvision
 import cv2
 
 from core.inference import get_max_preds
@@ -25,8 +24,9 @@ def save_batch_image_with_joints(batch_image, batch_joints, batch_joints_vis,
     batch_joints_vis: [batch_size, num_joints, 1],
     }
     '''
-    grid = torchvision.utils.make_grid(batch_image, nrow, padding, True)
-    ndarr = grid.mul(255).clamp(0, 255).byte().permute(1, 2, 0).cpu().numpy()
+    grid = utils.make_grid(batch_image, nrow, padding, True)
+    grid = grid.cpu().numpy()
+    ndarr = grid.mul(255).clip(0, 255).byte().transpose((1, 2, 0)).cpu().numpy()
     ndarr = ndarr.copy()
 
     nmaps = batch_image.size(0)

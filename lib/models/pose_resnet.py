@@ -17,17 +17,11 @@ import paddle
 import paddle.nn as nn
 from collections import OrderedDict
 
-import lib.utils.utils as utils
-from lib.models.backbones.resnet_vd import ResNet_vd
+import utils.utils as utils
+from models.backbones.resnet import get_resnet
 
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
-
-
-def conv3x3(in_planes, out_planes, stride=1):
-    """3x3 convolution with padding"""
-    return nn.Conv2D(in_planes, out_planes, kernel_size=3, stride=stride,
-                     padding=1, bias_attr=False)
 
 class PoseResNet(nn.Layer):
     """
@@ -37,7 +31,7 @@ class PoseResNet(nn.Layer):
 
     def __init__(self, backbone, cfg):
         super(PoseResNet, self).__init__()
-        self.inplanes = 64
+        self.inplanes = 2048
         extra = cfg.MODEL.EXTRA
         self.deconv_with_bias = extra.DECONV_WITH_BIAS
         self.backbone = backbone
@@ -57,7 +51,7 @@ class PoseResNet(nn.Layer):
             padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0
         )
 
-    def _get_deconv_cfg(self, deconv_kernel):
+    def _get_deconv_cfg(self, deconv_kernel, index):
         if deconv_kernel == 4:
             padding = 1
             output_padding = 0
@@ -98,7 +92,7 @@ class PoseResNet(nn.Layer):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = self.backbone(x)[-1]
+        x = self.backbone(x)
         x = self.deconv_layers(x)
         x = self.final_layer(x)
         return x
@@ -108,8 +102,9 @@ class PoseResNet(nn.Layer):
 
 
 def get_pose_net(cfg, is_train):
-    backbone = ResNet_vd(layers=cfg.MODEL.BACKBONE.DEPTH,pretrained=cfg.MODEL.BACKBONE.PRETRAINED)
+    backbone = get_resnet(depth=cfg.MODEL.DEPTH)
     model = PoseResNet(backbone=backbone, cfg=cfg)
     if is_train and cfg.MODEL.INIT_WEIGHTS:
         model.init_weight()
+    # print(model)
     return model

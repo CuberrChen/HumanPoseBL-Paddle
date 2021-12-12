@@ -23,10 +23,10 @@ import numpy as np
 import random
 from urllib.parse import urlparse, unquote
 
-from lib.utils import logger, seg_env
-from lib.utils.download import download_file_and_uncompress
+from utils import logger, seg_env
+from utils.download import download_file_and_uncompress
 
-from lib.core.config import get_model_name
+from core.config import get_model_name
 
 
 def create_logger(cfg, cfg_name, phase='train'):

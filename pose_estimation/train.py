@@ -16,26 +16,25 @@ import shutil
 import paddle
 import paddle.nn as nn
 import paddle.optimizer as optim
-# import paddle.utils.data
 import paddle.distributed as dist
 import paddle.vision.transforms as transforms
 from visualdl import LogWriter
 
-import pose_estimation._init_paths
-from lib.core.config import config
-from lib.core.config import update_config
-from lib.core.config import update_dir
-from lib.core.config import get_model_name
-from lib.core.loss import JointsMSELoss
-from lib.core.function import train
-from lib.core.function import validate
-from lib.utils.utils import get_optimizer
-from lib.utils.utils import save_checkpoint
-from lib.utils.utils import create_logger
-from lib.utils.utils import resume
+import _init_paths
+from core.config import config
+from core.config import update_config
+from core.config import update_dir
+from core.config import get_model_name
+from core.loss import JointsMSELoss
+from core.function import train
+from core.function import validate
+from utils.utils import get_optimizer
+from utils.utils import save_checkpoint
+from utils.utils import create_logger
+from utils.utils import resume
 
-import lib.dataset as dataset
-import lib.models as models
+import dataset
+import models
 
 
 def parse_args():
@@ -104,15 +103,7 @@ def main():
         'valid_global_steps': 0,
     }
 
-    # dump_input = paddle.rand((config.TRAIN.BATCH_SIZE,
-    #                          3,
-    #                          config.MODEL.IMAGE_SIZE[1],
-    #                          config.MODEL.IMAGE_SIZE[0]))
-    # writer_dict['writer'].add_graph(model, (dump_input, ), verbose=False)
-
     nranks = paddle.distributed.ParallelEnv().nranks
-    local_rank = paddle.distributed.ParallelEnv().local_rank
-
     if nranks>1:
         dist.init_parallel_env()
         model = paddle.DataParallel(model)
@@ -123,7 +114,7 @@ def main():
     )
 
     lr_scheduler = optim.lr.MultiStepDecay(learning_rate=config.TRAIN.LR,
-        milestones=config.TRAIN.LR_STEP, gamma=1-config.TRAIN.LR_FACTOR
+        milestones=config.TRAIN.LR_STEP, gamma=config.TRAIN.LR_FACTOR
     )
 
     optimizer = get_optimizer(lr_scheduler,config, model)
@@ -161,12 +152,14 @@ def main():
         batch_size=config.TRAIN.BATCH_SIZE,
         shuffle=config.TRAIN.SHUFFLE,
         num_workers=config.WORKERS,
+        use_shared_memory=True,
     )
     valid_loader = paddle.io.DataLoader(
         valid_dataset,
         batch_size=config.TEST.BATCH_SIZE,
         shuffle=False,
         num_workers=config.WORKERS,
+        use_shared_memory=False,
     )
 
     best_perf = 0.0
