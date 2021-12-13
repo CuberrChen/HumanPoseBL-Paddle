@@ -38,7 +38,6 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
     end = time.time()
     for i, (input, target, target_weight, meta) in enumerate(train_loader):
         # measure data loading time
-        optimizer.clear_grad()
 
         data_time.update(time.time() - end)
 
@@ -48,6 +47,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         loss = criterion(output, target, target_weight)
 
         # compute gradient and do update step
+        optimizer.clear_grad()
         loss.backward()
         optimizer.step()
 
