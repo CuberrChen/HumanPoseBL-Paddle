@@ -36,12 +36,12 @@ class JointsMSELoss(nn.Layer):
         loss = 0.
 
         for idx in range(num_joints):
-            heatmap_pred = heatmaps_pred[idx].squeeze(1)
-            heatmap_gt = heatmaps_gt[idx].squeeze(1)
+            heatmap_pred = heatmaps_pred[idx].squeeze()
+            heatmap_gt = heatmaps_gt[idx].squeeze()
             if self.use_target_weight:
-                loss += self.criterion(heatmap_pred * target_weight[:, idx],
-                                       heatmap_gt * target_weight[:, idx])
+                loss += 0.5 * self.criterion(heatmap_pred.multiply(target_weight[:, idx]),
+                                       heatmap_gt.multiply(target_weight[:, idx]))
             else:
-                loss += self.criterion(heatmap_pred, heatmap_gt)
+                loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
 
         return loss / num_joints * self.loss_weight

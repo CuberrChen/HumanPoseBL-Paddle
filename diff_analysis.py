@@ -12,10 +12,12 @@ from __future__ import print_function
 import os
 import logging
 
+import paddle
+from lib.models.backbones.resnet import get_resnet
+
 import torch
 import torch.nn as nn
 from collections import OrderedDict
-
 
 BN_MOMENTUM = 0.1
 logger = logging.getLogger(__name__)
@@ -241,7 +243,6 @@ class PoseResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-        print(x.shape)
         x = self.deconv_layers(x)
         x = self.final_layer(x)
 
@@ -278,10 +279,6 @@ class JointsMSELoss(nn.Module):
         self.use_target_weight = use_target_weight
 
     def forward(self, output, target, target_weight):
-        print("22222222")
-        print(output.shape)
-        print(target.shape)
-        print(target_weight.shape)
         batch_size = output.size(0)
         num_joints = output.size(1)
         heatmaps_pred = output.reshape((batch_size, num_joints, -1)).split(1, 1)
@@ -291,16 +288,6 @@ class JointsMSELoss(nn.Module):
         for idx in range(num_joints):
             heatmap_pred = heatmaps_pred[idx].squeeze()
             heatmap_gt = heatmaps_gt[idx].squeeze()
-            print(heatmap_pred.shape)
-            print(heatmap_gt.shape)
-            print(target_weight[:,idx].shape)
-            print(heatmap_pred.mul(target_weight[:, idx]).shape)
-            import paddle
-            heatmap_pred_pd = paddle.to_tensor(heatmap_pred.detach().numpy())
-            heatmap_pred = heatmap_pred.mul(target_weight[:, idx])
-            target_weight_pd = paddle.to_tensor(target_weight[:, idx].numpy())
-            heatmap_pred_pd = paddle.multiply(heatmap_pred_pd,target_weight_pd)
-            print((heatmap_pred_pd.detach().numpy()-heatmap_pred.detach().numpy()).sum())
             if self.use_target_weight:
                 loss += 0.5 * self.criterion(
                     heatmap_pred.mul(target_weight[:, idx]),
@@ -311,14 +298,7 @@ class JointsMSELoss(nn.Module):
 
         return loss / num_joints
 
-import os
-import logging
 
-import paddle
-
-from collections import OrderedDict
-
-from lib.models.backbones.resnet import get_resnet
 
 class PoseResNet_pd(paddle.nn.Layer):
     """
@@ -346,6 +326,7 @@ class PoseResNet_pd(paddle.nn.Layer):
             stride=1,
             padding=0
         )
+        self.init_weight()
 
     def _get_deconv_cfg(self, deconv_kernel, index):
         if deconv_kernel == 4:
@@ -393,9 +374,9 @@ class PoseResNet_pd(paddle.nn.Layer):
         x = self.final_layer(x)
         return x
 
-    # def init_weight(self):
-    #     utils.load_pretrained_model(self, self.pretrained)
-
+    def init_weight(self):
+        for i in self.state_dict():
+            print("i",i)
 
 def get_pose_net_pd():
     backbone = get_resnet(depth=50,pretrained=False)
@@ -413,7 +394,7 @@ class JointsMSELoss_pd(paddle.nn.Layer):
 
     def __init__(self, use_target_weight=False, loss_weight=1.):
         super().__init__()
-        self.criterion = nn.MSELoss()
+        self.criterion = paddle.nn.MSELoss()
         self.use_target_weight = use_target_weight
         self.loss_weight = loss_weight
 
@@ -428,20 +409,22 @@ class JointsMSELoss_pd(paddle.nn.Layer):
         loss = 0.
 
         for idx in range(num_joints):
-            heatmap_pred = heatmaps_pred[idx].squeeze(1)
-            heatmap_gt = heatmaps_gt[idx].squeeze(1)
+            heatmap_pred = heatmaps_pred[idx].squeeze()
+            heatmap_gt = heatmaps_gt[idx].squeeze()
             if self.use_target_weight:
-                loss += 0.5*self.criterion(heatmap_pred * target_weight[:, idx],
-                                       heatmap_gt * target_weight[:, idx])
+                loss += 0.5*self.criterion(heatmap_pred.multiply(target_weight[:, idx]),
+                                       heatmap_gt.multiply(target_weight[:, idx]))
             else:
                 loss += 0.5*self.criterion(heatmap_pred, heatmap_gt)
 
         return loss / num_joints * self.loss_weight
 
+
 if __name__ == '__main__':
     model = get_pose_net()
     model_pd = get_pose_net_pd()
     print(model)
+    print(model_pd)
     input = torch.rand(2,3,256,256)
     label = torch.rand(2,16,64,64)
     weight = torch.rand(2,16,1)
@@ -449,12 +432,15 @@ if __name__ == '__main__':
     label_pd = paddle.to_tensor(label.numpy())
     weight_pd = paddle.to_tensor(weight.numpy())
     out = model(input)
-    out_pd = model_pd(input_pd)
-    print(out.shape)
-    print(out_pd.shape)
-    print("out diff: ",(out_pd.numpy()-out.numpy()).sum())
+    out_pd_ = model_pd(input_pd)
+    out_pd = paddle.to_tensor(out.detach().numpy())
     loss = JointsMSELoss(use_target_weight=True)
     loss_pd = JointsMSELoss_pd(use_target_weight=True)
     lossv = loss(out,label,weight)
     lossv_pd = loss_pd(out_pd,label_pd,weight_pd)
-    print("loss diff: ",(lossv.numpy()-lossv_pd.numpy()).sum())
+    print(out.shape)
+    print(out_pd.shape)
+    print("out diff: ",(out_pd.detach().numpy()-out.detach().numpy()).sum())
+    print('losst:',lossv.detach().numpy())
+    print('losspdv:',lossv_pd.detach().numpy())
+    print("loss diff: ",(lossv.detach().numpy()-lossv_pd.detach().numpy()).sum())

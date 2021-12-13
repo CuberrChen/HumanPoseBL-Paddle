@@ -19,16 +19,16 @@ import paddle.optimizer as optim
 import paddle.distributed as dist
 import paddle.vision.transforms as transforms
 
-import pose_estimation._init_paths
-from lib.core.config import config
-from lib.core.config import update_config
-from lib.core.config import update_dir
-from lib.core.loss import JointsMSELoss
-from lib.core.function import validate
-from lib.utils.utils import create_logger
+import _init_paths
+from core.config import config
+from core.config import update_config
+from core.config import update_dir
+from core.loss import JointsMSELoss
+from core.function import validate
+from utils.utils import create_logger
 
-import lib.dataset as dataset
-import lib.models as models
+import dataset
+import models
 
 
 def parse_args():

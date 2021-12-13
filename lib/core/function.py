@@ -202,13 +202,10 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
         if writer_dict:
             writer = writer_dict['writer']
             global_steps = writer_dict['valid_global_steps']
-            writer.add_scalar('valid_loss', losses.avg, global_steps)
-            writer.add_scalar('valid_acc', acc.avg, global_steps)
-            if isinstance(name_values, list):
-                for name_value in name_values:
-                    writer.add_scalars('valid', dict(name_value), global_steps)
-            else:
-                writer.add_scalars('valid', dict(name_values), global_steps)
+            writer.add_scalar('valid/valid_loss', losses.avg, global_steps)
+            writer.add_scalar('valid/valid_acc', acc.avg, global_steps)
+            writer.add_scalar('valid/Mean', perf_indicator, global_steps)
+            writer.add_scalar('valid/Mean@0.1', name_values["Mean@0.1"], global_steps)
             writer_dict['valid_global_steps'] = global_steps + 1
 
     return perf_indicator

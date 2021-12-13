@@ -119,7 +119,7 @@ def main():
 
     optimizer = get_optimizer(lr_scheduler,config, model)
 
-    start_epoch = 0
+    start_epoch = config.TRAIN.BEGIN_EPOCH
     if args.resume_model is not None:
         start_epoch = resume(model, optimizer, args.resume_model)
 
@@ -152,7 +152,7 @@ def main():
         batch_size=config.TRAIN.BATCH_SIZE,
         shuffle=config.TRAIN.SHUFFLE,
         num_workers=config.WORKERS,
-        use_shared_memory=True,
+        use_shared_memory=False,
     )
     valid_loader = paddle.io.DataLoader(
         valid_dataset,
@@ -165,7 +165,7 @@ def main():
     best_perf = 0.0
     best_model = False
     for epoch in range(config.TRAIN.BEGIN_EPOCH, config.TRAIN.END_EPOCH):
-        if epoch<start_epoch:
+        if epoch < start_epoch:
             continue
         # update lr
         if isinstance(optimizer, paddle.distributed.fleet.Fleet):
