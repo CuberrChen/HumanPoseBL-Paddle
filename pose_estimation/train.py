@@ -147,17 +147,17 @@ def main():
         ])
     )
 
+    train_sampler = paddle.io.DistributedBatchSampler(dataset=train_dataset,batch_size=config.TRAIN.BATCH_SIZE,shuffle=config.TRAIN.SHUFFLE,drop_last=True)
     train_loader = paddle.io.DataLoader(
-        train_dataset,
-        batch_size=config.TRAIN.BATCH_SIZE,
-        shuffle=config.TRAIN.SHUFFLE,
+        dataset=train_dataset,
+        batch_sampler=train_sampler,
         num_workers=config.WORKERS,
         use_shared_memory=False,
     )
+    val_sampler = paddle.io.DistributedBatchSampler(dataset=valid_dataset,batch_size=config.TEST.BATCH_SIZE,shuffle=False,drop_last=False)
     valid_loader = paddle.io.DataLoader(
         valid_dataset,
-        batch_size=config.TEST.BATCH_SIZE,
-        shuffle=False,
+        batch_sampler=val_sampler,
         num_workers=config.WORKERS,
         use_shared_memory=False,
     )
