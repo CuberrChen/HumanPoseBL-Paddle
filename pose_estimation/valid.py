@@ -113,12 +113,12 @@ def main():
 
     if config.TEST.MODEL_FILE:
         logger.info('=> loading model from {}'.format(config.TEST.MODEL_FILE))
-        model.load_state_dict(paddle.load(config.TEST.MODEL_FILE))
+        model.load_dict(paddle.load(config.TEST.MODEL_FILE))
     else:
         model_state_file = os.path.join(final_output_dir,
                                         'final_state.pdparams')
         logger.info('=> loading model from {}'.format(model_state_file))
-        model.load_state_dict(paddle.load(model_state_file))
+        model.load_dict(paddle.load(model_state_file))
 
     nranks = paddle.distributed.ParallelEnv().nranks
     local_rank = paddle.distributed.ParallelEnv().local_rank

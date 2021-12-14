@@ -5,11 +5,15 @@
 # @FileName: predict.py
 # @Software: PyCharm
 # @mail ：joyful_chen@163.com
+
 import cv2
 import argparse
 import numpy as np
 import os
 
+"""
+Predict with onxx for coco only.
+"""
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Show demo')

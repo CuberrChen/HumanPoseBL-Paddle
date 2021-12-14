@@ -3,6 +3,7 @@ opencv-python
 Cython
 scipy
 pandas
-pyyaml
+pyyaml==5.4.1
 json_tricks
 scikit-image
+paddle2onnx

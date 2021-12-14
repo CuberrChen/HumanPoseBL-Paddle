@@ -26,13 +26,12 @@ The code is developed using python 3.7 on Ubuntu 16.04. NVIDIA GPUs are needed. 
    ```
    pip install -r requirements.txt
    ```
-3. Make libs:
+3. Install coco dependencies:
    ```
-   cd ${POSE_ROOT}/lib
-   make
+   cd cocoapi/PythonAPI&&python3 setup.py install --user
    ```
    
-4. Init output(training model output directory) and log(tensorboard log directory) directory:
+4. Init output(training model output directory) and log(visual log directory) directory:
 
    ```
    mkdir output 
@@ -78,6 +77,11 @@ ${POSE_ROOT}
 python pose_estimation/train.py \
     --cfg experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml
 ```
+The training info like:
+```
+2021-12-14 09:45:59     Epoch: [61][0/695]      Time 1.030s (1.030s)    Speed 31.1 samples/s    Data 0.819s (0.819s)    Lr 0.0010 (0.0010)      Loss 0.00045 (0.00045)  Accuracy 0.851 (0.851)
+2021-12-14 09:46:49     Epoch: [61][50/695]     Time 1.268s (0.992s)    Speed 25.2 samples/s    Data 1.026s (0.800s)    Lr 0.0010 (0.0010)      Loss 0.00044 (0.00047)  Accuracy 0.878 (0.849)
+```
 
 ### Valid on MPII using pretrained models
 
@@ -85,11 +89,39 @@ python pose_estimation/train.py \
 python pose_estimation/valid.py \
     --cfg experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml \
     --flip-test \
-    --model-file models/pytorch/pose_mpii/pose_resnet_50_256x256.pth.tar
+    --model-file output/mpii/pose_resnet_50/256x256_d256x3_adam_lr1e-3/model_best.pdparams
+```
+The valid info like:
+```
+Test: [0/93]    Time 0.774 (0.774)      Loss 0.0004 (0.0004)    Accuracy 0.909 (0.909)
+Test: [50/93]   Time 1.108 (0.790)      Loss 0.0005 (0.0005)    Accuracy 0.837 (0.852)
+| Arch | Head | Shoulder | Elbow | Wrist | Hip | Knee | Ankle | Mean | Mean@0.1 |
+|---|---|---|---|---|---|---|---|---|---|
+| 256x256_pose_resnet_50_d256d256d256 | 94.884 | 92.646 | 82.990 | 76.239 | 83.815 | 76.224 | 70.382 | 83.302 | 27.263 |
+```
+### Export .ONNX using pretrained models
+
+```
+python pose_estimation/export.py \
+    --cfg experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml \
+    --model-file output/mpii/pose_resnet_50/256x256_d256x3_adam_lr1e-3/model_best.pdparams
+```
+The exporting info like:
+```
+2021-12-14 09:57:14 [INFO]      ONNX model saved in ./output/onnx/posenet.onnx
+=> Model saved as: ./output/onnx/posenet.onnx
+=> Done.
 ```
 
+### Predict with exported ONNX models
+```
+python pose_estimation/predict.py --img data/mpii/images/004645041.jpg --model output/onnx/posenet.onnx --type ONNX --width 1280 --height 720 
+```
 ### Citation
-If you use our code or models in your research, please cite with:
+
+Original project: [https://github.com/microsoft/human-pose-estimation.pytorch](https://github.com/microsoft/human-pose-estimation.pytorch)
+
+If you want to cite the work in your research, please cite with:
 ```
 @inproceedings{xiao2018simple,
     author={Xiao, Bin and Wu, Haiping and Wei, Yichen},

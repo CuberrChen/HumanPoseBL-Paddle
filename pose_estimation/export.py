@@ -5,11 +5,6 @@
 # @FileName: export.py
 # @Software: PyCharm
 # @mail ：joyful_chen@163.com
-# ------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-# Written by Roman Tsyganok (iskullbreakeri@gmail.com)
-# ------------------------------------------------------------------------------
 
 
 from __future__ import absolute_import
@@ -88,16 +83,13 @@ def main():
     model = eval('models.' + config.MODEL.NAME + '.get_pose_net')(
         config, is_train=False
     )
-
+    model.eval()
     logger.info('=> loading model from {}'.format(config.TEST.MODEL_FILE))
-    filename = config.TEST.MODEL_FILE
     model.load_dict(paddle.load(config.TEST.MODEL_FILE))
     logger.info('=> Converting...')
-    model.cuda()
-    model.float()
     data_spec = paddle.static.InputSpec(shape=[1, 3, height, width], dtype='float32')
-    paddle.onnx.export(model, onnx_path + 'pose', input_spec=[data_spec])
-    logger.info('=> Model saved as: ' + onnx_path + 'pose' + '.onnx')
+    paddle.onnx.export(model, onnx_path + 'posenet', input_spec=[data_spec])
+    logger.info('=> Model saved as: ' + onnx_path + 'posenet' + '.onnx')
     logger.info('=> Done.')
 
 
