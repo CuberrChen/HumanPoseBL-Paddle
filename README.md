@@ -1,9 +1,11 @@
+[中文README]|[README_EN.md](README_EN.md)
 # Simple Baselines for Human Pose Estimation and Tracking
 
 
 ## 1 简介
 ![images](images/network.png)  
-本项目基于paddlepaddle框架复现了SimpleBaseline人体姿态估计算法，基于Pose_ResNet50在MPII据集上进行了实验。
+本项目基于paddlepaddle框架复现了Simple Baseline人体姿态估计算法，基于Pose_ResNet50在MPII据集上进行了实验。
+项目提供预训练模型和AiStudio在线体验NoteBook。
 **论文：**
 - [1] Xiao, Bin and Wu, Haiping and Wei, Yichen.
 European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human Pose Estimation and Tracking](https://arxiv.org/abs/1804.06208)
@@ -17,6 +19,7 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 |NetWork |epochs|opt|image_size|batch_size|dataset|memory|card|mean|config|weight|log|
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 |Pose_ResNet50|140|SGD|256x256|32|MPII|16G|1|88.7|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/13bG-VGyW4VsD5iw3aJpJsQ 提取码: d3qy 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](deeplabv2_res101_voc_0.125_20k/train.log)|
+
 注意：与原项目一致，采用了Flip test.
 
 ## 3 数据集
@@ -213,8 +216,8 @@ MODEL:
 | --- | --- |
 | 作者 | xbchen|
 | 日期 | 2021年12月 |
-| 框架版本 | PaddlePaddle==2.2.2 |
-| 应用场景 | 姿态估计 |
+| 框架版本 | PaddlePaddle==2.2.1 |
+| 应用场景 | 人体姿态估计 |
 | 硬件支持 | GPU、CPU |
 | 在线体验 | [notebook]()|
 

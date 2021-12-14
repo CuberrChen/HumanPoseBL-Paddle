@@ -121,8 +121,6 @@ def main():
         model.load_dict(paddle.load(model_state_file))
 
     nranks = paddle.distributed.ParallelEnv().nranks
-    local_rank = paddle.distributed.ParallelEnv().local_rank
-
     if nranks>1:
         dist.init_parallel_env()
         model = paddle.DataParallel(model)
@@ -145,11 +143,12 @@ def main():
             normalize,
         ])
     )
+    val_sampler = paddle.io.DistributedBatchSampler(dataset=valid_dataset,batch_size=config.TEST.BATCH_SIZE,shuffle=False,drop_last=False)
     valid_loader = paddle.io.DataLoader(
         valid_dataset,
-        batch_size=config.TEST.BATCH_SIZE,
-        shuffle=False,
+        batch_sampler=val_sampler,
         num_workers=config.WORKERS,
+        use_shared_memory=False,
     )
 
     # evaluate on validation set
