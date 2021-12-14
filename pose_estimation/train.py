@@ -60,6 +60,9 @@ def parse_args():
     parser.add_argument('--workers',
                         help='num of dataloader workers',
                         type=int)
+    parser.add_argument('--batch_size',
+                        help='batch_size',
+                        type=int)
     parser.add_argument('--resume_model',
                         help='resume path',
                         default=None,
@@ -74,7 +77,8 @@ def reset_config(config, args):
         config.GPUS = args.gpus
     if args.workers:
         config.WORKERS = args.workers
-
+    if args.batch_size:
+        config.TRAIN.BATCH_SIZE = args.batch_size
 
 def main():
     args = parse_args()
@@ -147,7 +151,7 @@ def main():
         ])
     )
 
-    train_sampler = paddle.io.DistributedBatchSampler(dataset=train_dataset,batch_size=config.TRAIN.BATCH_SIZE,shuffle=config.TRAIN.SHUFFLE,drop_last=True)
+    train_sampler = paddle.io.DistributedBatchSampler(dataset=train_dataset,batch_size=config.TRAIN.BATCH_SIZE,shuffle=config.TRAIN.SHUFFLE,drop_last=False)
     train_loader = paddle.io.DataLoader(
         dataset=train_dataset,
         batch_sampler=train_sampler,

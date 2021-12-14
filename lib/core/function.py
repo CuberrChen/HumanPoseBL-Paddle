@@ -123,11 +123,11 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                 # this part is ugly, because pypaddle has not supported negative index
                 # input_flipped = model(input[:, :, :, ::-1])
                 input_flipped = np.flip(input.cpu().numpy(), 3).copy()
-                input_flipped = paddle.to_tensor(input_flipped).cuda()
+                input_flipped = paddle.to_tensor(input_flipped)
                 output_flipped = model(input_flipped)
                 output_flipped = flip_back(output_flipped.cpu().numpy(),
                                            val_dataset.flip_pairs)
-                output_flipped = paddle.to_tensor(output_flipped.copy()).cuda()
+                output_flipped = paddle.to_tensor(output_flipped.copy())
 
                 # feature is not aligned, shift flipped heatmap for higher accuracy
                 if config.TEST.SHIFT_HEATMAP:
@@ -136,9 +136,6 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                     # output_flipped[:, :, :, 0] = 0
 
                 output = (output + output_flipped) * 0.5
-
-            target = target.cuda()
-            target_weight = target_weight.cuda()
 
             loss = criterion(output, target, target_weight)
 

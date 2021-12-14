@@ -2,12 +2,12 @@ GPUS: '0'
 DATA_DIR: ''
 OUTPUT_DIR: 'output'
 LOG_DIR: 'log'
-WORKERS: 4
+WORKERS: 0
 PRINT_FREQ: 50
 
 DATASET:
   DATASET: mpii
-  ROOT: '/home/aistudio/data/mpii/'
+  ROOT: 'data/mpii/'
   TEST_SET: valid
   TRAIN_SET: train
   FLIP: True
