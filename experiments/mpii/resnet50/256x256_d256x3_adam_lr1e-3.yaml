@@ -17,7 +17,7 @@ MODEL:
   NAME: pose_resnet
   BACKBONE: resnet
   DEPTH: 50
-  PRETRAINED: 'https://bj.bcebos.com/paddleseg/dygraph/resnet50_vd_ssld_v2.tar.gz'
+  PRETRAINED: ''
   IMAGE_SIZE:
   - 256
   - 256
