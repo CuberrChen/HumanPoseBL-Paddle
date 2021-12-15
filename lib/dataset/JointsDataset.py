@@ -1,9 +1,3 @@
-# ------------------------------------------------------------------------------
-# Copyright (c) Microsoft
-# Licensed under the MIT License.
-# Written by Bin Xiao (Bin.Xiao@microsoft.com)
-# ------------------------------------------------------------------------------
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -108,6 +102,7 @@ class JointsDataset(Dataset):
             flags=cv2.INTER_LINEAR)
 
         if self.transform:
+            input = input.transpose(2,0,1) # for don't use tensor in Dataset
             input = self.transform(input)
 
         for i in range(self.num_joints):
@@ -115,9 +110,6 @@ class JointsDataset(Dataset):
                 joints[i, 0:2] = affine_transform(joints[i, 0:2], trans)
 
         target, target_weight = self.generate_target(joints, joints_vis)
-
-        target = paddle.to_tensor(target)
-        target_weight = paddle.to_tensor(target_weight)
 
         meta = {
             'image': image_file,

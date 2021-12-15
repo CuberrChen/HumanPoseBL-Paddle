@@ -1,9 +1,3 @@
-# ------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License.
-# Written by Bin Xiao (Bin.Xiao@microsoft.com)
-# ------------------------------------------------------------------------------
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -129,14 +123,13 @@ def main():
 
     # Data loading code
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225])
+                                     std=[0.229, 0.224, 0.225],to_rgb=True)
     train_dataset = eval('dataset.'+config.DATASET.DATASET)(
         config,
         config.DATASET.ROOT,
         config.DATASET.TRAIN_SET,
         True,
         transforms.Compose([
-            transforms.ToTensor(),
             normalize,
         ])
     )
@@ -146,7 +139,6 @@ def main():
         config.DATASET.TEST_SET,
         False,
         transforms.Compose([
-            transforms.ToTensor(),
             normalize,
         ])
     )
@@ -181,7 +173,7 @@ def main():
 
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
-              final_output_dir, tb_log_dir, writer_dict)
+              final_output_dir, tb_log_dir, writer_dict, config.TRAIN.END_EPOCH)
 
 
         # evaluate on validation set

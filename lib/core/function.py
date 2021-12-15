@@ -1,9 +1,3 @@
-# ------------------------------------------------------------------------------
-# Copyright (c) Microsoft
-# Licensed under the MIT License.
-# Written by Bin Xiao (Bin.Xiao@microsoft.com)
-# ------------------------------------------------------------------------------
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -20,13 +14,14 @@ from core.evaluate import accuracy
 from core.inference import get_final_preds
 from utils.transforms import flip_back
 from utils.vis import save_debug_images
+from utils.timer import calculate_eta
 
 
 logger = logging.getLogger(__name__)
 
 
 def train(config, train_loader, model, criterion, optimizer, epoch,
-          output_dir, tb_log_dir, writer_dict):
+          output_dir, tb_log_dir, writer_dict, end_epoch):
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -41,6 +36,9 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
         data_time.update(time.time() - end)
 
+        input = paddle.to_tensor(input)
+        target = paddle.to_tensor(target)
+        target_weight = paddle.to_tensor(target_weight)
         # compute output
         output = model(input)
 
@@ -74,6 +72,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         time_array = time.localtime(end)
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
         if i % config.PRINT_FREQ == 0:
+            eta = calculate_eta(end_epoch*len(train_loader)-writer_dict['train_global_steps']+1,batch_time.avg)
             msg = current_time+'\t'+'Epoch: [{0}][{1}/{2}]\t' \
                   'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
                   'Speed {speed:.1f} samples/s\t' \
@@ -83,7 +82,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
                   'Accuracy {acc.val:.3f} ({acc.avg:.3f})'.format(
                       epoch, i, len(train_loader), batch_time=batch_time,
                       speed=input.shape[0]/batch_time.val,
-                      data_time=data_time, lr=lr, loss=losses, acc=acc)
+                      data_time=data_time, lr=lr, loss=losses, acc=acc) + eta
             logger.info(msg)
 
             writer = writer_dict['writer']
@@ -117,6 +116,9 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
     with paddle.no_grad():
         end = time.time()
         for i, (input, target, target_weight, meta) in enumerate(val_loader):
+            input = paddle.to_tensor(input)
+            target = paddle.to_tensor(target)
+            target_weight = paddle.to_tensor(target_weight)
             # compute output
             output = model(input)
             if config.TEST.FLIP_TEST:
