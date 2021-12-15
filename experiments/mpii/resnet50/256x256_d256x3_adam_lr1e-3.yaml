@@ -2,7 +2,7 @@ GPUS: '0'
 DATA_DIR: ''
 OUTPUT_DIR: 'output'
 LOG_DIR: 'log'
-WORKERS: 0
+WORKERS: 8
 PRINT_FREQ: 50
 
 DATASET:
@@ -59,7 +59,7 @@ TRAIN:
   NESTEROV: False
 TEST:
   BATCH_SIZE: 32
-  FLIP_TEST: False
+  FLIP_TEST: True
   MODEL_FILE: ''
 DEBUG:
   DEBUG: False

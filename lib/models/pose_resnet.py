@@ -35,7 +35,7 @@ class PoseResNet(nn.Layer):
         extra = cfg.MODEL.EXTRA
         self.deconv_with_bias = extra.DECONV_WITH_BIAS
         self.backbone = backbone
-        self.pretrained = cfg.MODEL.PRETRAINED
+        self.pretrained = cfg.MODEL.PRETRAINED if cfg.MODEL.PRETRAINED != '' else None
         # used for deconv layers
         self.deconv_layers = self._make_deconv_layer(
             extra.NUM_DECONV_LAYERS,
@@ -98,7 +98,8 @@ class PoseResNet(nn.Layer):
         return x
 
     def init_weight(self):
-        utils.load_pretrained_model(self, self.pretrained)
+        if self.pretrained:
+            utils.load_pretrained_model(self, self.pretrained)
 
 
 def get_pose_net(cfg, is_train):

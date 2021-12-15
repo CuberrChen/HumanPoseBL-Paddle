@@ -45,7 +45,6 @@ config.MODEL = edict()
 config.MODEL.NAME = 'pose_resnet'
 config.MODEL.BACKBONE = 'resnet'
 config.MODEL.DEPTH = 50
-config.MODEL.PRETRAINED = ''
 config.MODEL.INIT_WEIGHTS = True
 config.MODEL.PRETRAINED = ''
 config.MODEL.NUM_JOINTS = 16

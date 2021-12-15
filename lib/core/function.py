@@ -73,7 +73,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", time_array)
         if i % config.PRINT_FREQ == 0:
             eta = calculate_eta(end_epoch*len(train_loader)-writer_dict['train_global_steps']+1,batch_time.avg)
-            msg = current_time+'\t'+'Epoch: [{0}][{1}/{2}]\t' \
+            msg = 'Epoch: [{0}][{1}/{2}]\t' \
                   'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
                   'Speed {speed:.1f} samples/s\t' \
                   'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \
@@ -82,7 +82,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
                   'Accuracy {acc.val:.3f} ({acc.avg:.3f})'.format(
                       epoch, i, len(train_loader), batch_time=batch_time,
                       speed=input.shape[0]/batch_time.val,
-                      data_time=data_time, lr=lr, loss=losses, acc=acc) + eta
+                      data_time=data_time, lr=lr, loss=losses, acc=acc) + '\t' + eta
             logger.info(msg)
 
             writer = writer_dict['writer']
