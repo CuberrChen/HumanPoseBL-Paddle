@@ -70,7 +70,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         batch_time.update(time.time() - end)
         end = time.time()
         if i % config.PRINT_FREQ == 0:
-            eta = calculate_eta((end_epoch-epoch)*len(train_loader)-writer_dict['train_global_steps']+1,batch_time.avg)
+            eta = calculate_eta((end_epoch-epoch)*len(train_loader)-i,batch_time.avg)
             msg = 'Epoch: [{0}][{1}/{2}]\t' \
                   'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
                   'Speed {speed:.1f} samples/s\t' \

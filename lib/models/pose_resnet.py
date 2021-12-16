@@ -18,9 +18,10 @@ import paddle.nn as nn
 from collections import OrderedDict
 
 import utils.utils as utils
+import cvlibs.param_init as param_init
 from models.backbones.resnet import get_resnet
 
-BN_MOMENTUM = 0.1
+BN_MOMENTUM = 0.9
 logger = logging.getLogger(__name__)
 
 class PoseResNet(nn.Layer):
@@ -50,6 +51,7 @@ class PoseResNet(nn.Layer):
             stride=1,
             padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0
         )
+        self.init_weight()
 
     def _get_deconv_cfg(self, deconv_kernel, index):
         if deconv_kernel == 4:
@@ -98,7 +100,17 @@ class PoseResNet(nn.Layer):
         return x
 
     def init_weight(self):
-        if self.pretrained:
+        for layer in self.deconv_layers.sublayers():
+            if isinstance(layer, nn.Conv2DTranspose):
+                param_init.normal_init(layer.weight, std=0.001)
+            elif isinstance(layer, (nn.BatchNorm2D, nn.SyncBatchNorm)):
+                param_init.constant_init(layer.weight, value=1.0)
+                param_init.constant_init(layer.bias, value=0.0)
+        for layer in self.final_layer.sublayers():
+            if isinstance(layer, nn.Conv2D):
+                param_init.normal_init(layer.weight, std=0.001)
+                param_init.constant_init(layer.bias, value=0.0)
+        if self.pretrained is not None:
             utils.load_pretrained_model(self, self.pretrained)
 
 
@@ -107,5 +119,4 @@ def get_pose_net(cfg, is_train):
     model = PoseResNet(backbone=backbone, cfg=cfg)
     if is_train and cfg.MODEL.INIT_WEIGHTS:
         model.init_weight()
-    # print(model)
     return model
