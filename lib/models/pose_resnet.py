@@ -100,16 +100,15 @@ class PoseResNet(nn.Layer):
         return x
 
     def init_weight(self):
-        for layer in self.deconv_layers.sublayers():
+        for layer in self.sublayers():
             if isinstance(layer, nn.Conv2DTranspose):
                 param_init.normal_init(layer.weight, std=0.001)
             elif isinstance(layer, (nn.BatchNorm2D, nn.SyncBatchNorm)):
                 param_init.constant_init(layer.weight, value=1.0)
                 param_init.constant_init(layer.bias, value=0.0)
-        for layer in self.final_layer.sublayers():
-            if isinstance(layer, nn.Conv2D):
-                param_init.normal_init(layer.weight, std=0.001)
-                param_init.constant_init(layer.bias, value=0.0)
+        if isinstance(self.final_layer, nn.Conv2D):
+            param_init.normal_init(self.final_layer.weight, std=0.001)
+            param_init.constant_init(self.final_layer.bias, value=0.0)
         if self.pretrained is not None:
             utils.load_pretrained_model(self, self.pretrained)
 

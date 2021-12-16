@@ -19,8 +19,8 @@ import numpy as np
 import paddle
 from paddle.distributed.parallel import ParallelEnv
 from visualdl import LogWriter
-from lib.utils.progbar import Progbar
-import lib.utils.logger as logger
+from utils.progbar import Progbar
+import utils.logger as logger
 
 
 class CallbackList(object):

@@ -18,9 +18,9 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 
 |NetWork |epochs|opt|image_size|batch_size|dataset|memory|card|mean|config|weight|log|
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|Pose_ResNet50|140|SGD|256x256|32|MPII|16G|1|88.7|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/13bG-VGyW4VsD5iw3aJpJsQ 提取码: d3qy 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](deeplabv2_res101_voc_0.125_20k/train.log)|
+|PoseResNet50|140|SGD|256x256|32x4|MPII|32G|1|88.7|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/13bG-VGyW4VsD5iw3aJpJsQ 提取码: d3qy 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](deeplabv2_res101_voc_0.125_20k/train.log)|
 
-注意：与原项目一致，采用了Flip test.
+注意：与原项目一致，采用了Flip test。原项目的配置是4卡，所以batch_size需要在[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments) 基础上x4。
 
 ## 3 数据集
 [MPII](http://human-pose.mpi-inf.mpg.de/)
@@ -95,7 +95,7 @@ python -m paddle.distributed.launch --cfg experiments/mpii/resnet50/256x256_d256
 2.可以在配置文件中FLIP_TEST: True开启训练时翻转测试。
 
 ### 第三步：测试
-output目录下包含已经训练好的模型参数（仓库内没有，需要从上面表格提供的链接先下载）以及对应的日志（train.log）。log文件夹包含可视化日志（vdlrecords.1638194689.log）文件。
+
 ```bash
 python pose_estimation/valid.py \
     --cfg experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml \
@@ -198,7 +198,7 @@ python pose_estimation/deploy.py --img data/coco/images/xxx.jpg --model output/o
 **说明**
 1、本项目在Aistudio平台进行开发，使用Tesla V100 16G* 1。  
 
-如果你想使用其他数据集，如coco。请检查[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments)
+2、如果你想使用其他数据集，如coco。请检查[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments)
 
 .yaml文件的差异如下(**只需要增加BACKBONE这一行和DEPTH这一行**,其余的相同):
 ```
@@ -207,6 +207,7 @@ MODEL:
   BACKBONE: resnet
   DEPTH: 50
 ```
+3、output目录下包含已经训练好的模型参数（仓库内没有，需要从上面表格提供的链接先下载）以及对应的日志（train.log）。log文件夹包含可视化日志（vdlrecords.1638194689.log）文件。
 
 ## 6 模型信息
 
@@ -219,7 +220,7 @@ MODEL:
 | 框架版本 | PaddlePaddle==2.2.1 |
 | 应用场景 | 人体姿态估计 |
 | 硬件支持 | GPU、CPU |
-| 在线体验 | [notebook]()|
+| 在线体验 | [Notebook](https://aistudio.baidu.com/aistudio/projectdetail/3232783?contributionType=1)|
 
 ## 7 引用
 
