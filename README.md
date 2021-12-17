@@ -196,18 +196,29 @@ python pose_estimation/deploy.py --img data/coco/images/xxx.jpg --model output/o
    └── requirements.txt
 ```
 **说明**
-1、本项目在Aistudio平台进行开发，使用Tesla V100 16G* 1。  
+1、本项目在Aistudio平台进行开发，使用Tesla V100 32G* 1。  
 
 2、如果你想使用其他数据集，如coco。请检查[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments)
 
-.yaml文件的差异如下(**只需要增加BACKBONE这一行和DEPTH这一行**,其余的相同):
+.yaml文件的差异如下(**只需要增加BACKBONE这一行和DEPTH这一行以及增加学习率更新策略这一行（可选PolynomialDecay/MultiStepDecay）**,其余的相同):
 ```
 MODEL:
   NAME: pose_resnet
   BACKBONE: resnet
   DEPTH: 50
+
+TRAIN:
+  BATCH_SIZE: 128
+  SHUFFLE: True
+  BEGIN_EPOCH: 0
+  END_EPOCH: 140
+  RESUME: False
+  OPTIMIZER: adam
+  LR_TYPE: PolynomialDecay
 ```
-3、output目录下包含已经训练好的模型参数（仓库内没有，需要从上面表格提供的链接先下载）以及对应的日志（train.log）。log文件夹包含可视化日志（vdlrecords.1638194689.log）文件。
+实验发现，原项目采用的MultiStepDecay效果不如PolynomialDecay，因为在最后近20个epoch，MultiStepDecay策略的学习率已经下降到0.00001,对于模型的影响已经很小，几乎没什么作用。
+
+3、output目录下包含已经训练好的模型参数（仓库内没有，需要从上面表格提供的链接先下载）以及对应的日志（train.log）。log文件夹包含可视化日志文件。
 
 ## 6 模型信息
 

@@ -49,7 +49,7 @@ TRAIN:
   END_EPOCH: 140
   RESUME: False
   OPTIMIZER: adam
-  LR_TYPE: MultiStepDecay
+  LR_TYPE: PolynomialDecay
   LR: 0.001
   LR_FACTOR: 0.1
   LR_STEP: [90,120]
