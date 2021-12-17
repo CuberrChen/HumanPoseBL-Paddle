@@ -71,7 +71,7 @@ def get_lr_scheduler(cfg,iters_one_epoch):
         milestones=cfg.TRAIN.LR_STEP, gamma=cfg.TRAIN.LR_FACTOR
     )
     if cfg.TRAIN.LR_TYPE == 'PolynomialDecay':
-        lr_scheduler = optim.lr.PolynomialDecay(learning_rate=cfg.TRAIN.LR,decay_steps=(cfg.END_EPOCH-cfg.BEGIN_EPOCH)*iters_one_epoch,end_lr=0,power=0.9)
+        lr_scheduler = optim.lr.PolynomialDecay(learning_rate=cfg.TRAIN.LR,decay_steps=(cfg.TRAIN.END_EPOCH-cfg.TRAIN.BEGIN_EPOCH)*iters_one_epoch,end_lr=0,power=0.9)
     return lr_scheduler
 
 def get_optimizer(lr_sche, cfg, model):
