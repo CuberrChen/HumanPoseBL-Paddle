@@ -18,7 +18,7 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 
 |NetWork |epochs|opt|lr|image_size|batch_size|dataset|memory|card|mean|config|weight|log|
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|PoseResNet50|140|Adam|0.001|256x256|32x4|MPII|32G|1|88.8|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/1gaeyGPThltbyeoEQTx7RZQ 提取码: sxfs 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](output/mpii/pose_resnet_50/256x256_d256x3_adam_lr1e-3/256x256_d256x3_adam_lr1e-3_2021-12-17-11-59_train.log)|
+|PoseResNet50|140|Adam|0.001|256x256|32x4|MPII|32G|1|88.81|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/1gaeyGPThltbyeoEQTx7RZQ 提取码: sxfs 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](output/mpii/pose_resnet_50/256x256_d256x3_adam_lr1e-3/256x256_d256x3_adam_lr1e-3_2021-12-17-11-59_train.log)|
 
 注意：与原项目一致，采用了Flip test。原项目的配置是4卡，所以batch_size需要在[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments) 基础上x4。
 
