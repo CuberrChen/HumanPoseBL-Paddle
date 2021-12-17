@@ -66,8 +66,9 @@ def create_logger(cfg, cfg_name, phase='train'):
     return logger, str(final_output_dir), str(tensorboard_log_dir)
 
 def get_lr_scheduler(cfg,iters_one_epoch):
+    cfg.TRAIN.LR_STEP = [step*iters_one_epoch for step in cfg.TRAIN.LR_STEP]
     lr_scheduler = optim.lr.MultiStepDecay(learning_rate=cfg.TRAIN.LR,
-        milestones=cfg.TRAIN.LR_STEP*iters_one_epoch, gamma=cfg.TRAIN.LR_FACTOR
+        milestones=cfg.TRAIN.LR_STEP, gamma=cfg.TRAIN.LR_FACTOR
     )
     if cfg.TRAIN.LR_TYPE == 'PolynomialDecay':
         lr_scheduler = optim.lr.PolynomialDecay(learning_rate=cfg.TRAIN.LR,decay_steps=(cfg.END_EPOCH-cfg.BEGIN_EPOCH)*iters_one_epoch,end_lr=0,power=0.9)
