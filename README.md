@@ -232,7 +232,7 @@ TRAIN:
 | 框架版本 | PaddlePaddle==2.2.1 |
 | 应用场景 | 人体姿态估计 |
 | 硬件支持 | GPU、CPU |
-| 在线体验 | [Notebook](https://aistudio.baidu.com/aistudio/projectdetail/3232783?contributionType=1)|
+| 在线体验 | [Notebook](https://aistudio.baidu.com/aistudio/projectdetail/3260424?shared=1)|
 
 ## 7 引用
 
