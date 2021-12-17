@@ -9,7 +9,7 @@ State-of-the-art results are achieved on challenging benchmarks.
 ### Results on MPII val
 | Arch | Head | Shoulder | Elbow | Wrist | Hip | Knee | Ankle | Mean | Mean@0.1|
 |---|---|---|---|---|---|---|---|---|---|
-| 256x256_pose_resnet_50_d256d256d256 | 96.351 | 95.329 | 88.989 | 83.176 | 88.420 | 83.960 | 79.594 | 88.532 | 33.911 |
+| 256x256_pose_resnet_50_d256d256d256 | 96.658 | 95.482 | 89.041 | 83.587 | 88.333 | 84.625 | 80.090 | 88.808 | 34.241 |
 
 ### Note:
 - Flip test is used.
@@ -86,6 +86,7 @@ The training output info like:
 
 ### Valid on MPII using pretrained models
 
+pretained_model link: [https://pan.baidu.com/s/1gaeyGPThltbyeoEQTx7RZQ](https://pan.baidu.com/s/1gaeyGPThltbyeoEQTx7RZQ) valid code: sxfs
 ```
 python pose_estimation/valid.py \
     --cfg experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml \
@@ -94,11 +95,11 @@ python pose_estimation/valid.py \
 ```
 The valid info output format as follow:
 ```
-Test: [0/93]    Time 0.774 (0.774)      Loss 0.0004 (0.0004)    Accuracy 0.909 (0.909)
-Test: [50/93]   Time 1.108 (0.790)      Loss 0.0005 (0.0005)    Accuracy 0.837 (0.852)
+Test: [0/93]	Time 5.032 (5.032)	Loss 0.0003 (0.0003)	Accuracy 0.946 (0.946)
+Test: [50/93]	Time 0.254 (0.391)	Loss 0.0004 (0.0004)	Accuracy 0.901 (0.900)
 | Arch | Head | Shoulder | Elbow | Wrist | Hip | Knee | Ankle | Mean | Mean@0.1 |
 |---|---|---|---|---|---|---|---|---|---|
-| 256x256_pose_resnet_50_d256d256d256 | 94.884 | 92.646 | 82.990 | 76.239 | 83.815 | 76.224 | 70.382 | 83.302 | 27.263 |
+| 256x256_pose_resnet_50_d256d256d256 | 96.658 | 95.482 | 89.041 | 83.587 | 88.333 | 84.625 | 80.090 | 88.808 | 34.241 |
 ```
 ### Infer on Test image using pretrained models
 Note: 
@@ -162,12 +163,21 @@ Original project: [https://github.com/microsoft/human-pose-estimation.pytorch](h
 
 If you want use other dataset such as coco. Please check the orginal project's experiments setting.
 
-The differences in .yaml file are as follows(**You need to point out the depth of backbone**):
+The differences in .yaml file are as follows(**You need to point out the depth of backbone and select lr_sche**):
 ```
 MODEL:
   NAME: pose_resnet
   BACKBONE: resnet
   DEPTH: 50
+
+TRAIN:
+  BATCH_SIZE: 128
+  SHUFFLE: True
+  BEGIN_EPOCH: 0
+  END_EPOCH: 140
+  RESUME: False
+  OPTIMIZER: adam
+  LR_TYPE: PolynomialDecay
 ```
 
 If you want to cite the work in your research, please cite with:
