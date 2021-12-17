@@ -16,9 +16,9 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 ## 2 复现精度
 >在MPII val数据集的测试效果如下表。
 
-|NetWork |epochs|opt|image_size|batch_size|dataset|memory|card|mean|config|weight|log|
-| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-|PoseResNet50|140|SGD|256x256|32x4|MPII|32G|1|88.7|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/13bG-VGyW4VsD5iw3aJpJsQ 提取码: d3qy 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](deeplabv2_res101_voc_0.125_20k/train.log)|
+|NetWork |epochs|opt|lr|image_size|batch_size|dataset|memory|card|mean|config|weight|log|
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+|PoseResNet50|140|Adam|0.001|256x256|32x4|MPII|32G|1|88.8|[256x256_d256x3_adam_lr1e-3.yaml](experiments/mpii/resnet50/256x256_d256x3_adam_lr1e-3.yaml)|(链接: https://pan.baidu.com/s/1gaeyGPThltbyeoEQTx7RZQ 提取码: sxfs 复制这段内容后打开百度网盘手机App，操作更方便哦)|[log](output/mpii/pose_resnet_50/256x256_d256x3_adam_lr1e-3/256x256_d256x3_adam_lr1e-3_2021-12-17-11-59_train.log)|
 
 注意：与原项目一致，采用了Flip test。原项目的配置是4卡，所以batch_size需要在[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments) 基础上x4。
 
@@ -26,9 +26,8 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 [MPII](http://human-pose.mpi-inf.mpg.de/)
 原始数据集是matlab的格式，论文提供了转换成json存储的数据集：[OneDrive](https://onedrive.live.com/?cid=56b9f9c97f261712&id=56B9F9C97F261712%2110692&ithint=folder&authkey=!AKqtqKs162Z5W7g)
 - 数据集大小:
-    - 训练集: 15K
-    - 验证集: 3K
-    - 测试集: 7K 
+    - 训练集: 22246 samples
+    - 验证集: 2958 samples
     
 16类标注： (0 - r ankle, 1 - r knee, 2 - r hip, 3 - l hip, 4 - l knee, 5 - l ankle, 6 - pelvis, 7 - thorax, 8 - upper neck, 9 - head top, 10 - r wrist, 11 - r elbow, 12 - r shoulder, 13 - l shoulder, 14 - l elbow, 15 - l wris
 
@@ -48,10 +47,10 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 ```
 
 ## 4 环境依赖
-- 硬件: Tesla V100 16G * 1
+- 硬件: Tesla V100 32G * 1
 
 - 框架:
-    - PaddlePaddle == 2.2.2
+    - PaddlePaddle == 2.2.1
   
     
 ## 快速开始
@@ -81,8 +80,9 @@ python pose_estimation/train.py \
 ```
 训练过程中输出的信息类似下面的形式:
 ```
-2021-12-14 09:45:59     Epoch: [61][0/695]      Time 1.030s (1.030s)    Speed 31.1 samples/s    Data 0.819s (0.819s)    Lr 0.0010 (0.0010)      Loss 0.00045 (0.00045)  Accuracy 0.851 (0.851)
-2021-12-14 09:46:49     Epoch: [61][50/695]     Time 1.268s (0.992s)    Speed 25.2 samples/s    Data 1.026s (0.800s)    Lr 0.0010 (0.0010)      Loss 0.00044 (0.00047)  Accuracy 0.878 (0.849)
+2021-12-17 11:59:56,978 Epoch: [0][0/174]	Time 15.091s (15.091s)	Speed 8.5 samples/s	Data 12.101s (12.101s)	Lr 0.00100 (0.00100)	Loss 0.00146 (0.00146)	Accuracy 0.016 (0.016)	eta: 102:07:06
+2021-12-17 12:01:11,021 Epoch: [0][50/174]	Time 1.500s (1.748s)	Speed 85.3 samples/s	Data 0.001s (0.361s)	Lr 0.00100 (0.00100)	Loss 0.00139 (0.00160)	Accuracy 0.050 (0.017)	eta: 11:48:07
+2021-12-17 12:02:20,573 Epoch: [0][100/174]	Time 1.551s (1.571s)	Speed 82.5 samples/s	Data 0.001s (0.183s)	Lr 0.00100 (0.00100)	Loss 0.00139 (0.00150)	Accuracy 0.033 (0.017)	eta: 10:35:16
 ```
 
 多卡训练：
@@ -105,11 +105,12 @@ python pose_estimation/valid.py \
 
 验证输出信息类似下面的形式：
 ```
-Test: [0/93]    Time 0.774 (0.774)      Loss 0.0004 (0.0004)    Accuracy 0.909 (0.909)
-Test: [50/93]   Time 1.108 (0.790)      Loss 0.0005 (0.0005)    Accuracy 0.837 (0.852)
+=> load 2958 samples
+Test: [0/93]	Time 5.032 (5.032)	Loss 0.0003 (0.0003)	Accuracy 0.946 (0.946)
+Test: [50/93]	Time 0.254 (0.391)	Loss 0.0004 (0.0004)	Accuracy 0.901 (0.900)
 | Arch | Head | Shoulder | Elbow | Wrist | Hip | Knee | Ankle | Mean | Mean@0.1 |
 |---|---|---|---|---|---|---|---|---|---|
-| 256x256_pose_resnet_50_d256d256d256 | 94.884 | 92.646 | 82.990 | 76.239 | 83.815 | 76.224 | 70.382 | 83.302 | 27.263 |
+| 256x256_pose_resnet_50_d256d256d256 | 96.658 | 95.482 | 89.041 | 83.587 | 88.333 | 84.625 | 80.090 | 88.808 | 34.241 |
 ```
 ### 第四步：单张图像推理
 注意: 

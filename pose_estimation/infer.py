@@ -146,13 +146,12 @@ def main():
         (int(config.MODEL.IMAGE_SIZE[0]), int(config.MODEL.IMAGE_SIZE[1])),
         flags=cv2.INTER_LINEAR)
 
+    input = input.transpose(2,0,1) # for don't use tensor in Dataset
     transform = transforms.Compose([
-        transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406],
                              std=[0.229, 0.224, 0.225]),
     ])
-
-    input = transform(input).unsqueeze(0)
+    input = paddle.to_tensor(transform(input)).unsqueeze(0)
     # switch to evaluate mode
     model.eval()
     with paddle.no_grad():
