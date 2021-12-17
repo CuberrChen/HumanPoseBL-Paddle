@@ -22,7 +22,7 @@ from core.config import get_model_name
 from core.loss import JointsMSELoss
 from core.function import train
 from core.function import validate
-from utils.utils import get_optimizer
+from utils.utils import get_optimizer,get_lr_scheduler
 from utils.utils import save_checkpoint
 from utils.utils import create_logger
 from utils.utils import resume
@@ -106,24 +106,9 @@ def main():
         dist.init_parallel_env()
         model = paddle.DataParallel(model)
 
-    # define loss function (criterion) and optimizer
-    criterion = JointsMSELoss(
-        use_target_weight=config.LOSS.USE_TARGET_WEIGHT
-    )
-
-    lr_scheduler = optim.lr.MultiStepDecay(learning_rate=config.TRAIN.LR,
-        milestones=config.TRAIN.LR_STEP, gamma=config.TRAIN.LR_FACTOR
-    )
-
-    optimizer = get_optimizer(lr_scheduler,config, model)
-
-    start_epoch = config.TRAIN.BEGIN_EPOCH
-    if args.resume_model is not None:
-        start_epoch = resume(model, optimizer, args.resume_model)
-
     # Data loading code
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                     std=[0.229, 0.224, 0.225],to_rgb=True)
+                                     std=[0.229, 0.224, 0.225])
     train_dataset = eval('dataset.'+config.DATASET.DATASET)(
         config,
         config.DATASET.ROOT,
@@ -158,19 +143,24 @@ def main():
         use_shared_memory=False,
     )
 
+    # define loss function (criterion) and optimizer
+    criterion = JointsMSELoss(
+        use_target_weight=config.LOSS.USE_TARGET_WEIGHT
+    )
+
+    lr_scheduler = get_lr_scheduler(config,len(train_loader))
+    optimizer = get_optimizer(lr_scheduler,config, model)
+
+    start_epoch = config.TRAIN.BEGIN_EPOCH
+    if args.resume_model is not None:
+        start_epoch = resume(model, optimizer, args.resume_model)
+
+    # train
     best_perf = 0.0
     best_model = False
     for epoch in range(config.TRAIN.BEGIN_EPOCH, config.TRAIN.END_EPOCH):
         if epoch < start_epoch:
             continue
-        # update lr
-        if isinstance(optimizer, paddle.distributed.fleet.Fleet):
-            lr_sche = optimizer.user_defined_optimizer._learning_rate
-        else:
-            lr_sche = optimizer._learning_rate
-        if isinstance(lr_sche, paddle.optimizer.lr.LRScheduler):
-            lr_sche.step()
-
         # train for one epoch
         train(config, train_loader, model, criterion, optimizer, epoch,
               final_output_dir, tb_log_dir, writer_dict, config.TRAIN.END_EPOCH)

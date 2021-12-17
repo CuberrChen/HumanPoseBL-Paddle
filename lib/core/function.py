@@ -51,13 +51,13 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
 
         lr = optimizer.get_lr()
 
-        # # update lr
-        # if isinstance(optimizer, paddle.distributed.fleet.Fleet):
-        #     lr_sche = optimizer.user_defined_optimizer._learning_rate
-        # else:
-        #     lr_sche = optimizer._learning_rate
-        # if isinstance(lr_sche, paddle.optimizer.lr.LRScheduler):
-        #     lr_sche.step()
+        # update lr
+        if isinstance(optimizer, paddle.distributed.fleet.Fleet):
+            lr_sche = optimizer.user_defined_optimizer._learning_rate
+        else:
+            lr_sche = optimizer._learning_rate
+        if isinstance(lr_sche, paddle.optimizer.lr.LRScheduler):
+            lr_sche.step()
 
         # measure accuracy and record loss
         losses.update(loss.numpy()[0], input.shape[0])

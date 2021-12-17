@@ -74,6 +74,7 @@ config.DATASET.ROT_FACTOR = 30
 # train
 config.TRAIN = edict()
 
+config.TRAIN.LR_TYPE = 'MultiStepDecay'
 config.TRAIN.LR_FACTOR = 0.1
 config.TRAIN.LR_STEP = [90, 110]
 config.TRAIN.LR = 0.001
