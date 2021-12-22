@@ -22,6 +22,7 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 
 注意：与原项目一致，采用了Flip test。原项目的配置是4卡，所以batch_size需要在[原始项目的实验设置](https://github.com/microsoft/human-pose-estimation.pytorch/tree/master/experiments) 基础上x4。
 
+AIStudio上预训练模型下载地址：[PoseNet50_Pretrained](https://aistudio.baidu.com/aistudio/datasetoverview/1/1)
 ## 3 数据集
 [MPII](http://human-pose.mpi-inf.mpg.de/)
 原始数据集是matlab的格式，论文提供了转换成json存储的数据集：[OneDrive](https://onedrive.live.com/?cid=56b9f9c97f261712&id=56B9F9C97F261712%2110692&ithint=folder&authkey=!AKqtqKs162Z5W7g)
