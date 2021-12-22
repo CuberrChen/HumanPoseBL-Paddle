@@ -25,6 +25,7 @@ European Conference on Computer Vision (ECCV), 2018. [Simple Baselines for Human
 ## 3 数据集
 [MPII](http://human-pose.mpi-inf.mpg.de/)
 原始数据集是matlab的格式，论文提供了转换成json存储的数据集：[OneDrive](https://onedrive.live.com/?cid=56b9f9c97f261712&id=56B9F9C97F261712%2110692&ithint=folder&authkey=!AKqtqKs162Z5W7g)
+AiStudio上的公开数据集：[MPII Human Pose](https://aistudio.baidu.com/aistudio/datasetdetail/58767)
 - 数据集大小:
     - 训练集: 22246 samples
     - 验证集: 2958 samples
@@ -219,7 +220,7 @@ TRAIN:
 ```
 实验发现，原项目采用的MultiStepDecay效果不如PolynomialDecay，因为在最后近20个epoch，MultiStepDecay策略的学习率已经下降到0.00001,对于模型的影响已经很小，几乎没什么作用。
 
-3、output目录下包含已经训练好的模型参数（仓库内没有，需要从上面表格提供的链接先下载）以及对应的日志（train.log）。log文件夹包含可视化日志文件。
+3、output目录下包含已经训练好的模型参数（仓库内没有，需要从上面表格提供的链接先下载/AiStudio项目里output文件夹已经包含预训练模型）以及对应的日志（train.log）。log文件夹包含可视化日志文件。
 
 ## 6 模型信息
 
